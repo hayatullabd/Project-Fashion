@@ -1,0 +1,89 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <section class="hero bg-cover bg-center h-96 mb-8" style="background-image: url('https://placehold.co/1200x400?text=Hero+Banner');" data-aos="fade-in">
+        <div class="flex items-center justify-center h-full bg-black bg-opacity-50">
+            <div class="text-center text-white">
+                <h1 class="text-4xl font-bold bengali">Discover Authentic Bangladeshi Fashion</h1>
+                <p class="mt-2">Traditional craftsmanship meets contemporary style in our exclusive collection</p>
+                <div class="mt-4 space-x-4">
+                    <a href="{% url 'product_list' %}" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Shop Now</a>
+                    <a href="{% url 'product_list' %}?sort=newest" class="bg-gray-200 text-black px-6 py-2 rounded hover:bg-gray-300">New Arrivals</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories mb-12">
+        <h2 class="text-3xl font-bold text-center mb-6 bengali" data-aos="fade-up">Shop By Category</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {% for category in categories %}
+                <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="zoom-in">
+                    <img src="https://placehold.co/300x200?text={{ category.name }}" alt="{{ category.name }}" class="w-full h-48 object-cover rounded-t-lg">
+                    <div class="p-4 text-center">
+                        <h3 class="text-xl font-semibold">{{ category.name }}</h3>
+                        <p>{{ category.description|default:"Explore our collection" }}</p>
+                        <a href="{% url 'product_list' %}?category={{ category.slug }}" class="text-blue-500 hover:underline">Explore</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="featured-products mb-12">
+        <h2 class="text-3xl font-bold text-center mb-6 bengali" data-aos="fade-up">Featured Products</h2>
+        <div class="flex justify-center gap-4 mb-6">
+            <button onclick="filterProducts('all')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">All</button>
+            <button onclick="filterProducts('women')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Women</button>
+            <button onclick="filterProducts('men')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Men</button>
+            <button onclick="filterProducts('new')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">New Arrivals</button>
+            <button onclick="filterProducts('discounted')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Discounted</button>
+        </div>
+        <div id="product-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {% for product in featured_products %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="fade-up">
+                    {% if product.discount %}
+                        <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded">{{ product.discount }}% OFF</span>
+                    {% endif %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg lazy" loading="lazy">
+                    <div class="p-4">
+                        <h3 class="text-xl font-semibold">{{ product.name }}</h3>
+                        <p>{{ product.description|truncatewords:10 }}</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-lg font-bold">৳{{ product.price }}</span>
+                            {% if product.discount %}
+                                <span class="line-through text-gray-500">৳{{ product.original_price }}</span>
+                            {% endif %}
+                        </div>
+                        <button onclick="addToCart({{ product.id }})" class="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600">Add to Cart</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-6">
+            <a href="{% url 'product_list' %}" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">View All Products</a>
+        </div>
+    </section>
+
+    <section class="testimonials mb-12">
+        <h2 class="text-3xl font-bold text-center mb-6 bengali" data-aos="fade-up">What Our Customers Say</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for review in reviews|slice:":3" %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6" data-aos="fade-up">
+                    <img src="https://placehold.co/50x50?text=User" alt="User" class="w-12 h-12 rounded-full mx-auto mb-2">
+                    <p class="italic">"{{ review.comment }}"</p>
+                    <p class="mt-2 font-semibold">{{ review.user.username }}</p>
+                    <p class="text-gray-500">{{ review.user.profile.city|default:"Bangladesh" }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="newsletter bg-gray-200 dark:bg-gray-700 p-6 rounded-lg">
+        <h2 class="text-3xl font-bold text-center mb-4 bengali" data-aos="fade-up">Stay Updated</h2>
+        <p class="text-center mb-4">Subscribe to our newsletter for exclusive offers, new arrivals, and fashion tips</p>
+        <form class="flex justify-center gap-2">
+            <input type="email" placeholder="Enter your email" class="p-2 rounded border dark:bg-gray-800 dark:border-gray-600">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Subscribe</button>
+        </form>
+    </section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="fade-up">
+        <h1 class="text-3xl font-bold mb-4 bengali">Order Confirmed!</h1>
+        <p class="mb-4">Thank you for your purchase. Your order has been placed successfully.</p>
+        <div class="space-x-4">
+            <a href="{% url 'product_list' %}" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">Continue Shopping</a>
+            <a href="{% url 'profile' %}#orders" class="bg-gray-200 text-black px-6 py-2 rounded hover:bg-gray-300">View Orders</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <div class="flex flex-col md:flex-row gap-8" data-aos="fade-up">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full md:w-1/2 h-96 object-cover rounded-lg">
+        <div class="md:w-1/2">
+            <h1 class="text-3xl font-bold">{{ product.name }}</h1>
+            <p class="text-2xl font-bold mt-2">৳{{ product.price }}</p>
+            {% if product.discount %}
+                <p class="line-through text-gray-500">৳{{ product.original_price }}</p>
+            {% endif %}
+            <p class="mt-2">{{ product.description }}</p>
+            <p class="mt-2">Stock: {{ product.stock }}</p>
+            {% if product.variants.exists %}
+                <select id="variant-select" class="p-2 border dark:bg-gray-800 mt-2">
+                    {% for variant in product.variants.all %}
+                        <option value="{{ variant.id }}" data-stock="{{ variant.stock }}">{{ variant.size }} / {{ variant.color }} - ৳{{ variant.price|default:product.price }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+            <div class="mt-4 space-x-2">
+                <button onclick="addToCart({{ product.id }}{% if product.variants.exists %}, document.getElementById('variant-select').value{% endif %})" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">Add to Cart</button>
+                <button onclick="addToWishlist({{ product.id }})" class="bg-yellow-500 text-white px-6 py-2 rounded hover:bg-yellow-600">Add to Wishlist</button>
+            </div>
+        </div>
+    </div>
+    <section class="reviews mt-12" data-aos="fade-left">
+        <h2 class="text-2xl font-bold mb-4">Customer Reviews</h2>
+        {% for review in reviews %}
+            <div class="border p-4 mb-4 rounded dark:border-gray-700">
+                <p>Rating: {{ review.rating }}/5</p>
+                <p>{{ review.comment }}</p>
+                <p class="text-gray-500">By {{ review.user.username }} on {{ review.created_at }}</p>
+            </div>
+        {% endfor %}
+        {% if user.is_authenticated %}
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Review</button>
+            </form>
+        {% else %}
+            <p class="bengali">রিভিউ যোগ করতে লগইন করুন।</p>
+        {% endif %}
+    </section>
+{% endblock %}

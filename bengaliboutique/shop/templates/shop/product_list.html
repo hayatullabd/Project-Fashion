@@ -1,0 +1,74 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <h1 class="text-3xl font-bold mb-6 bengali" data-aos="fade-right">All Products</h1>
+    <div class="flex flex-col md:flex-row gap-6">
+        <aside class="md:w-1/4">
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow" data-aos="fade-right">
+                <h2 class="text-xl font-bold mb-4">Filters</h2>
+                <form id="filter-form">
+                    <div class="mb-4">
+                        <h3 class="font-semibold">Categories</h3>
+                        {% for category in categories %}
+                            <label class="block"><input type="checkbox" name="category" value="{{ category.slug }}" {% if category.slug in request.GET.category %}checked{% endif %}> {{ category.name }}</label>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="font-semibold">Price Range</h3>
+                        <input type="number" name="price_min" placeholder="Min ৳500" value="{{ request.GET.price_min }}" class="w-full p-2 border dark:bg-gray-800">
+                        <input type="number" name="price_max" placeholder="Max ৳20000" value="{{ request.GET.price_max }}" class="w-full p-2 border dark:bg-gray-800 mt-2">
+                    </div>
+                    <div class="mb-4">
+                        <h3 class="font-semibold">Sort By</h3>
+                        <select name="sort" class="w-full p-2 border dark:bg-gray-800">
+                            <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                            <option value="price_asc" {% if request.GET.sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                            <option value="price_desc" {% if request.GET.sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                            <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded w-full">Apply Filters</button>
+                </form>
+            </div>
+        </aside>
+        <div class="md:w-3/4">
+            <div class="relative mb-4">
+                <input type="text" name="q" id="search-input" placeholder="Search products" value="{{ request.GET.q }}" class="w-full p-2 border dark:bg-gray-800">
+                <div id="search-suggestions" class="absolute w-full bg-white dark:bg-gray-800 border dark:border-gray-700 hidden"></div>
+            </div>
+            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for product in products %}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="zoom-in">
+                        {% if product.discount %}
+                            <span class="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded">{{ product.discount }}% OFF</span>
+                        {% endif %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded-t-lg lazy" loading="lazy">
+                        <div class="p-4">
+                            <h3 class="text-xl font-semibold">{{ product.name }}</h3>
+                            <p>{{ product.description|truncatewords:10 }}</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-lg font-bold">৳{{ product.price }}</span>
+                                {% if product.discount %}
+                                    <span class="line-through text-gray-500">৳{{ product.original_price }}</span>
+                                {% endif %}
+                            </div>
+                            <button onclick="addToCart({{ product.id }})" class="bg-green-500 text-white px-4 py-2 mt-2 rounded hover:bg-green-600">Add to Cart</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="pagination mt-6 flex justify-center gap-4">
+                {% if page > 1 %}
+                    <a href="?page={{ page|add:'-1' }}&{{ request.GET.urlencode|cut:'&page=' }}" class="bg-gray-200 px-4 py-2 rounded">« Previous</a>
+                {% endif %}
+                {% for num in page|add:'-2'|make_list|add_range:5 %}
+                    {% if num|add:0 > 0 %}
+                        <a href="?page={{ num }}&{{ request.GET.urlencode|cut:'&page=' }}" class="{% if page == num|add:0 %}bg-blue-500 text-white{% else %}bg-gray-200{% endif %} px-4 py-2 rounded">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                {% if products.count == per_page %}
+                    <a href="?page={{ page|add:'1' }}&{{ request.GET.urlencode|cut:'&page=' }}" class="bg-gray-200 px-4 py-2 rounded">Next »</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

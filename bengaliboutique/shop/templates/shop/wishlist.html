@@ -1,0 +1,21 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <h1 class="text-3xl font-bold mb-6 bengali" data-aos="fade-up">Wishlist</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {% for item in wishlist_items %}
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="fade-up">
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-48 object-cover rounded-t-lg lazy" loading="lazy">
+                <div class="p-4">
+                    <h3 class="text-xl font-semibold">{{ item.product.name }}</h3>
+                    <p>৳{{ item.product.price }}</p>
+                    <div class="mt-2 space-x-2">
+                        <button onclick="addToCart({{ item.product.id }})" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Add to Cart</button>
+                        <button onclick="removeFromWishlist({{ item.product.id }})" class="text-red-500 hover:underline">Remove</button>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center bengali">আপনার ইচ্ছাতালিকা খালি।</p>
+        {% endfor %}
+    </div>
+{% endblock %}

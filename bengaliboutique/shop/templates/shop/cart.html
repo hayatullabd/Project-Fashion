@@ -1,0 +1,44 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+    <h1 class="text-3xl font-bold mb-6 bengali" data-aos="fade-up">Your Shopping Cart</h1>
+    <div class="flex flex-col md:flex-row gap-6">
+        <div class="md:w-3/4">
+            {% if cart_items %}
+                <table class="w-full bg-white dark:bg-gray-800 rounded-lg shadow">
+                    <thead class="bg-gray-200 dark:bg-gray-700">
+                        <tr><th class="p-4">Product</th><th>Quantity</th><th>Price</th><th>Total</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                            <tr class="border-b dark:border-gray-700">
+                                <td class="p-4">{{ item.product.name }} {% if item.variant %}({{ item.variant.size }}/{{ item.variant.color }}){% endif %}</td>
+                                <td><input type="number" value="{{ item.quantity }}" min="1" onchange="updateCart({{ item.product.id }}{% if item.variant %}, '{{ item.variant.id }}'{% endif %}, this.value)" class="w-16 p-2 border dark:bg-gray-800"></td>
+                                <td>৳{% if item.variant %}{{ item.variant.price|default:item.product.price }}{% else %}{{ item.product.price }}{% endif %}</td>
+                                <td>৳{{ item.total }}</td>
+                                <td><button onclick="removeFromCart({{ item.product.id }}{% if item.variant %}, '{{ item.variant.id }}'{% endif %})" class="text-red-500 hover:underline">Remove</button></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-lg shadow" data-aos="fade-up">
+                    <p class="text-xl bengali">Your cart is empty</p>
+                    <a href="{% url 'product_list' %}" class="bg-blue-500 text-white px-6 py-2 mt-4 rounded hover:bg-blue-600">Continue Shopping</a>
+                </div>
+            {% endif %}
+        </div>
+        {% if cart_items %}
+            <div class="md:w-1/4">
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow" data-aos="fade-up">
+                    <h2 class="text-xl font-bold mb-4">Order Summary</h2>
+                    <p>Subtotal: ৳{{ total }}</p>
+                    <p>Shipping: ৳100.00</p>
+                    <p>Tax: ৳0.00</p>
+                    <p class="text-xl font-bold mt-2">Total: ৳{{ total|add:100 }}</p>
+                    <a href="{% url 'checkout' %}" class="bg-blue-500 text-white px-4 py-2 mt-4 block text-center rounded hover:bg-blue-600">Proceed to Checkout</a>
+                    <a href="{% url 'product_list' %}" class="text-blue-500 hover:underline mt-2 block text-center">Continue Shopping</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
